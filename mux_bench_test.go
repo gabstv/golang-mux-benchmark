@@ -792,6 +792,10 @@ func (c *BenchmarkController) Bench(in *goboots.In) *goboots.Out {
 	return in.OutputString("hello")
 }
 
+func (c *BenchmarkController) Composite(in *goboots.In) *goboots.Out {
+	return in.OutputString(in.Params["MyField"])
+}
+
 func BenchmarkGoboots_Simple(b *testing.B) {
 	//
 	app := goboots.NewApp()
@@ -859,6 +863,42 @@ func BenchmarkGoboots_Middleware(b *testing.B) {
 			panic("no good")
 		}
 	}
+}
+
+func BenchmarkGoboots_Composite(b *testing.B) {
+	namespaces, resources, requests := resourceSetup(10)
+
+	myFilter := func(in *goboots.In) bool {
+		return true
+	}
+
+	myFilterDoes := func(in *goboots.In) bool {
+		in.Params["MyField"] = in.R.URL.Path
+		return true
+	}
+
+	app := goboots.NewApp()
+	app.Config = &goboots.AppConfig{
+		Name:            "Benchmark",
+		HostAddr:        ":19019",
+		GlobalPageTitle: "Benchmark - ",
+	}
+
+	app.Filters = []goboots.Filter{myFilterDoes, myFilter, myFilter, myFilter, myFilter, myFilter}
+
+	app.RegisterController(&BenchmarkController{})
+
+	for _, ns := range namespaces {
+		for _, res := range resources {
+			app.AddRouteLine("GET /" + ns + "/" + res + " BenchmarkController.Composite")
+			app.AddRouteLine("POST /" + ns + "/" + res + " BenchmarkController.Composite")
+			app.AddRouteLine("GET /" + ns + "/" + res + "/:id BenchmarkController.Composite")
+			app.AddRouteLine("PUT /" + ns + "/" + res + "/:id BenchmarkController.Composite")
+			app.AddRouteLine("DELETE /" + ns + "/" + res + "/:id BenchmarkController.Composite")
+		}
+	}
+	app.BenchLoadAll()
+	benchmarkRoutes(b, app, requests)
 }
 
 //

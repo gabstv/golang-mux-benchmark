@@ -141,3 +141,75 @@ BenchmarkGoji_Middleware                5000000        694 ns/op
 BenchmarkGoji_Composite                  500000       3999 ns/op
 ```
 
+`go test -bench=. 2>/dev/null` in @gabstv's 3.4 GHz i7 iMac (Late '11):
+
+```
+BenchmarkGocraftWeb_Simple               2000000        838 ns/op
+BenchmarkGocraftWeb_Route15               500000       2385 ns/op
+BenchmarkGocraftWeb_Route75               500000       2397 ns/op
+BenchmarkGocraftWeb_Route150              500000       2410 ns/op
+BenchmarkGocraftWeb_Route300              500000       2411 ns/op
+BenchmarkGocraftWeb_Route3000             500000       2571 ns/op
+BenchmarkGocraftWeb_Middleware           1000000       1431 ns/op
+BenchmarkGocraftWeb_Composite             500000       3554 ns/op
+
+BenchmarkGorillaMux_Simple               1000000       1742 ns/op
+BenchmarkGorillaMux_Route15               500000       3304 ns/op
+BenchmarkGorillaMux_Route75               300000       5359 ns/op
+BenchmarkGorillaMux_Route150              200000       7976 ns/op
+BenchmarkGorillaMux_Route300              100000      13176 ns/op
+BenchmarkGorillaMux_Route3000              10000     120000 ns/op
+
+BenchmarkMartini_Simple                   200000       5533 ns/op
+BenchmarkMartini_Route15                  100000      11971 ns/op
+BenchmarkMartini_Route75                  100000      14732 ns/op
+BenchmarkMartini_Route150                 100000      18240 ns/op
+BenchmarkMartini_Route300                  50000      25339 ns/op
+BenchmarkMartini_Route3000                 10000     143292 ns/op
+BenchmarkMartini_Middleware               100000      12107 ns/op
+BenchmarkMartini_Composite                 50000      24617 ns/op
+
+BenchmarkRcrowleyTigerTonic_Simple       5000000        268 ns/op
+BenchmarkRcrowleyTigerTonic_Route15       300000       3707 ns/op
+BenchmarkRcrowleyTigerTonic_Route75       300000       3768 ns/op
+BenchmarkRcrowleyTigerTonic_Route150      300000       3744 ns/op
+BenchmarkRcrowleyTigerTonic_Route300      300000       3749 ns/op
+BenchmarkRcrowleyTigerTonic_Route3000     300000       3966 ns/op
+
+BenchmarkPiluTraffic_Simple              1000000       1368 ns/op
+BenchmarkPiluTraffic_Route15              300000       3732 ns/op
+BenchmarkPiluTraffic_Route75              200000       7227 ns/op
+BenchmarkPiluTraffic_Route150             200000      10756 ns/op
+BenchmarkPiluTraffic_Route300             100000      19615 ns/op
+BenchmarkPiluTraffic_Route3000             10000     173336 ns/op
+BenchmarkPiluTraffic_Middleware          1000000       1452 ns/op
+BenchmarkPiluTraffic_Composite            100000      10241 ns/op
+
+BenchmarkGoJsonRest_Simple                 50000      36157 ns/op
+BenchmarkGoJsonRest_Route15                50000      37522 ns/op
+BenchmarkGoJsonRest_Route75                50000      37457 ns/op
+BenchmarkGoJsonRest_Route150               50000      37133 ns/op
+BenchmarkGoJsonRest_Route300               50000      37207 ns/op
+BenchmarkGoJsonRest_Route3000              50000      37888 ns/op
+BenchmarkGoJsonRest_Middleware             50000      36301 ns/op
+BenchmarkGoJsonRest_Composite              50000      37500 ns/op
+
+BenchmarkGoji_Simple                     5000000        350 ns/op
+BenchmarkGoji_Route15                    2000000        820 ns/op
+BenchmarkGoji_Route75                    2000000        846 ns/op
+BenchmarkGoji_Route150                   2000000        863 ns/op
+BenchmarkGoji_Route300                   2000000        870 ns/op
+BenchmarkGoji_Route3000                  2000000        940 ns/op
+BenchmarkGoji_Middleware                 3000000        457 ns/op
+BenchmarkGoji_Composite                  1000000       1541 ns/op
+
+BenchmarkGoboots_Simple                   100000      12001 ns/op
+BenchmarkGoboots_Route15                  100000      13071 ns/op
+BenchmarkGoboots_Route75                  100000      13166 ns/op
+BenchmarkGoboots_Route150                 100000      13171 ns/op
+BenchmarkGoboots_Route300                 100000      13288 ns/op
+BenchmarkGoboots_Route3000                100000      13773 ns/op
+BenchmarkGoboots_Middleware               100000      11983 ns/op
+BenchmarkGoboots_Composite                100000      13344 ns/op
+```
+
