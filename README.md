@@ -12,6 +12,7 @@ A collection of benchmarks for popular Go web frameworks.
 *  [Traffic](https://github.com/pilu/traffic)
 *  [go-json-rest](https://github.com/ant0ine/go-json-rest)
 *  [Goji](https://github.com/zenazn/goji/)
+*  [goboots](https://github.com/gabstv/goboots/)
 
 # Benchmarks
 

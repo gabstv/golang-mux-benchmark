@@ -24,6 +24,8 @@ import (
 
 	//"github.com/zenazn/goji"
 	gojiweb "github.com/zenazn/goji/web"
+
+	"github.com/gabstv/goboots"
 )
 
 //
@@ -758,6 +760,108 @@ func BenchmarkGoji_Composite(b *testing.B) {
 }
 
 //
+// Benchmarks for gabstv/goboots:
+//
+
+func gobootsRouterFor(namespaces []string, resources []string) http.Handler {
+	app := goboots.NewApp()
+	app.Config = &goboots.AppConfig{
+		Name:            "Benchmark",
+		HostAddr:        ":19019",
+		GlobalPageTitle: "Benchmark - ",
+	}
+	app.RegisterController(&BenchmarkController{})
+	for _, ns := range namespaces {
+		for _, res := range resources {
+			app.AddRouteLine("GET /" + ns + "/" + res + " BenchmarkController.Bench")
+			app.AddRouteLine("POST /" + ns + "/" + res + " BenchmarkController.Bench")
+			app.AddRouteLine("GET /" + ns + "/" + res + "/:id BenchmarkController.Bench")
+			app.AddRouteLine("PUT /" + ns + "/" + res + "/:id BenchmarkController.Bench")
+			app.AddRouteLine("DELETE /" + ns + "/" + res + "/:id BenchmarkController.Bench")
+		}
+	}
+	app.BenchLoadAll()
+	return app
+}
+
+type BenchmarkController struct {
+	goboots.Controller
+}
+
+func (c *BenchmarkController) Bench(in *goboots.In) *goboots.Out {
+	return in.OutputString("hello")
+}
+
+func BenchmarkGoboots_Simple(b *testing.B) {
+	//
+	app := goboots.NewApp()
+	app.Config = &goboots.AppConfig{
+		Name:            "Benchmark",
+		HostAddr:        ":19019",
+		GlobalPageTitle: "Benchmark - ",
+	}
+	app.RegisterController(&BenchmarkController{})
+	app.AddRouteLine("GET /action BenchmarkController.Bench")
+	app.BenchLoadAll()
+
+	w, r := testRequest("GET", "/action")
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		app.ServeHTTP(w, r)
+	}
+}
+
+func BenchmarkGoboots_Route15(b *testing.B) {
+	benchmarkRoutesN(b, 1, gobootsRouterFor)
+}
+
+func BenchmarkGoboots_Route75(b *testing.B) {
+	benchmarkRoutesN(b, 5, gobootsRouterFor)
+}
+
+func BenchmarkGoboots_Route150(b *testing.B) {
+	benchmarkRoutesN(b, 10, gobootsRouterFor)
+}
+
+func BenchmarkGoboots_Route300(b *testing.B) {
+	benchmarkRoutesN(b, 20, gobootsRouterFor)
+}
+
+func BenchmarkGoboots_Route3000(b *testing.B) {
+	benchmarkRoutesN(b, 200, gobootsRouterFor)
+}
+
+func BenchmarkGoboots_Middleware(b *testing.B) {
+	myFilter := func(in *goboots.In) bool {
+		return true
+	}
+
+	app := goboots.NewApp()
+	app.Config = &goboots.AppConfig{
+		Name:            "Benchmark",
+		HostAddr:        ":19019",
+		GlobalPageTitle: "Benchmark - ",
+	}
+
+	app.Filters = []goboots.Filter{myFilter, myFilter, myFilter, myFilter, myFilter, myFilter}
+
+	app.RegisterController(&BenchmarkController{})
+	app.AddRouteLine("GET /action BenchmarkController.Bench")
+	app.BenchLoadAll()
+
+	w, r := testRequest("GET", "/action")
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		app.ServeHTTP(w, r)
+		if w.Code != 200 {
+			panic("no good")
+		}
+	}
+}
+
+//
 // Helpers:
 //
 func helloHandler(rw http.ResponseWriter, r *http.Request) {
@@ -843,7 +947,7 @@ func benchmarkRoutesGoji(b *testing.B, handler gojiweb.Handler, requests []*http
 			reqId = 0
 		}
 		req := requests[reqId]
-		handler.ServeHTTPC(gojiweb.C{Env: map[string]interface{}{}}, recorder, req)
+		handler.ServeHTTPC(gojiweb.C{Env: map[interface{}]interface{}{}}, recorder, req)
 
 		if recorder.Code != 200 {
 			panic("goji error")
